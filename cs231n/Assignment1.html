@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://cs231n.github.io/assignments2017/assignment1/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CS231n Convolutional Neural Networks for Visual Recognition</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Course materials and notes for Stanford class CS231n: Convolutional Neural Networks for Visual Recognition.">
+    <link rel="canonical" href="http://cs231n.github.io/assignments2017/assignment1/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./Assignment1_files/main.css">
+
+    <!-- Google fonts -->
+    <link href="./Assignment1_files/css" rel="stylesheet" type="text/css">
+
+    <!-- Google tracking -->
+    <script async="" src="./Assignment1_files/analytics.js"></script><script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-46895817-2', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+
+
+    <body><div id="MathJax_Message" style="display: none;"></div>
+
+    <header class="site-header">
+
+  <div class="wrap title-wrap">
+    <a class="site-title" href="http://cs231n.github.io/">CS231n Convolutional Neural Networks for Visual Recognition</a>
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1></h1>
+  </header>
+
+  <article class="post-content">
+  <p>In this assignment you will practice putting together a simple image classification pipeline, based on the k-Nearest Neighbor or the SVM/Softmax classifier. The goals of this assignment are as follows:</p>
+
+<ul>
+  <li>understand the basic <strong>Image Classification pipeline</strong> and the data-driven approach (train/predict stages)</li>
+  <li>understand the train/val/test <strong>splits</strong> and the use of validation data for <strong>hyperparameter tuning</strong>.</li>
+  <li>develop proficiency in writing efficient <strong>vectorized</strong> code with numpy</li>
+  <li>implement and apply a k-Nearest Neighbor (<strong>kNN</strong>) classifier</li>
+  <li>implement and apply a Multiclass Support Vector Machine (<strong>SVM</strong>) classifier</li>
+  <li>implement and apply a <strong>Softmax</strong> classifier</li>
+  <li>implement and apply a <strong>Two layer neural network</strong> classifier</li>
+  <li>understand the differences and tradeoffs between these classifiers</li>
+  <li>get a basic understanding of performance improvements from using <strong>higher-level representations</strong> than raw pixels (e.g. color histograms, Histogram of Gradient (HOG) features)</li>
+</ul>
+
+<h2 id="setup">Setup</h2>
+<p>You can work on the assignment in one of two ways: locally on your own machine, or on a virtual machine on Google Cloud.</p>
+
+<h3 id="working-remotely-on-google-cloud-recommended">Working remotely on Google Cloud (Recommended)</h3>
+
+<p><strong>Note:</strong> after following these instructions, make sure you go to <strong>Download data</strong> below (you can skip the <strong>Working locally</strong> section).</p>
+
+<p>As part of this course, you can use Google Cloud for your assignments. We recommend this route for anyone who is having trouble with installation set-up, or if you would like to use better CPU/GPU resources than you may have locally. Please see the set-up tutorial <a href="http://cs231n.github.io/gce-tutorial/">here</a> for more details. :)</p>
+
+<h3 id="working-locally">Working locally</h3>
+<p>Get the code as a zip file <a href="http://cs231n.stanford.edu/assignments/2017/spring1617_assignment1.zip">here</a>. As for the dependencies:</p>
+
+<p><strong>Installing Python 3.5+:</strong>
+To use python3, make sure to install version 3.5 or 3.6 on your local machine. If you are on Mac OS X, you can do this using <a href="https://brew.sh/">Homebrew</a> with <code class="highlighter-rouge">brew install python3</code>. You can find instructions for Ubuntu <a href="https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-ubuntu-16-04">here</a>.</p>
+
+<p><strong>Virtual environment:</strong>
+If you decide to work locally, we recommend using <a href="http://docs.python-guide.org/en/latest/dev/virtualenvs/">virtual environment</a> for the project. If you choose not to use a virtual environment, it is up to you to make sure that all dependencies for the code are installed globally on your machine. To set up a virtual environment, run the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>assignment1
+<span class="nb">sudo </span>pip install virtualenv      <span class="c"># This may already be installed</span>
+virtualenv <span class="nt">-p</span> python3 .env       <span class="c"># Create a virtual environment (python3)</span>
+<span class="c"># Note: you can also use "virtualenv .env" to use your default python (usually python 2.7)</span>
+<span class="nb">source</span> .env/bin/activate         <span class="c"># Activate the virtual environment</span>
+pip install <span class="nt">-r</span> requirements.txt  <span class="c"># Install dependencies</span>
+<span class="c"># Work on the assignment for a while ...</span>
+deactivate                       <span class="c"># Exit the virtual environment</span>
+</code></pre></div></div>
+
+<p>Note that every time you want to work on the assignment, you should run <code class="highlighter-rouge">source .env/bin/activate</code> (from within your <code class="highlighter-rouge">assignment1</code> folder) to re-activate the virtual environment, and <code class="highlighter-rouge">deactivate</code> again whenever you are done.</p>
+
+<h3 id="download-data">Download data:</h3>
+<p>Once you have the starter code (regardless of which method you choose above), you will need to download the CIFAR-10 dataset.
+Run the following from the <code class="highlighter-rouge">assignment1</code> directory:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>cs231n/datasets
+./get_datasets.sh
+</code></pre></div></div>
+
+<h3 id="start-ipython">Start IPython:</h3>
+<p>After you have the CIFAR-10 data, you should start the IPython notebook server from the
+<code class="highlighter-rouge">assignment1</code> directory, with the <code class="highlighter-rouge">jupyter notebook</code> command. (See the <a href="http://cs231n.github.io/gce-tutorial/">Google Cloud Tutorial</a> for any additional steps you may need to do for setting this up, if you are working remotely)</p>
+
+<p>If you are unfamiliar with IPython, you can also refer to our
+<a href="http://cs231n.github.io/ipython-tutorial">IPython tutorial</a>.</p>
+
+<h3 id="some-notes">Some Notes</h3>
+<p><strong>NOTE 1:</strong> This year, the <code class="highlighter-rouge">assignment1</code> code has been tested to be compatible with python versions <code class="highlighter-rouge">2.7</code>, <code class="highlighter-rouge">3.5</code>, <code class="highlighter-rouge">3.6</code> (it may work with other versions of <code class="highlighter-rouge">3.x</code>, but we won’t be officially supporting them). You will need to make sure that during your <code class="highlighter-rouge">virtualenv</code> setup that the correct version of <code class="highlighter-rouge">python</code> is used. You can confirm your python version by (1) activating your virtualenv and (2) running <code class="highlighter-rouge">which python</code>.</p>
+
+<p><strong>NOTE 2:</strong> If you are working in a virtual environment on OSX, you may <em>potentially</em> encounter
+errors with matplotlib due to the <a href="http://matplotlib.org/faq/virtualenv_faq.html">issues described here</a>. In our testing, it seems that this issue is no longer present with the most recent version of matplotlib, but if you do end up running into this issue you may have to use the <code class="highlighter-rouge">start_ipython_osx.sh</code> script from the <code class="highlighter-rouge">assignment1</code> directory (instead of <code class="highlighter-rouge">jupyter notebook</code> above) to launch your IPython notebook server. Note that you may have to modify some variables within the script to match your version of python/installation directory. The script assumes that your virtual environment is named <code class="highlighter-rouge">.env</code>.</p>
+
+<h3 id="submitting-your-work">Submitting your work:</h3>
+<p>Whether you work on the assignment locally or using Google Cloud, once you are done
+working run the <code class="highlighter-rouge">collectSubmission.sh</code> script; this will produce a file called
+<code class="highlighter-rouge">assignment1.zip</code>. Please submit this file on <a href="https://canvas.stanford.edu/courses/66461/">Canvas</a>.</p>
+
+<h3 id="q1-k-nearest-neighbor-classifier-20-points">Q1: k-Nearest Neighbor classifier (20 points)</h3>
+
+<p>The IPython Notebook <strong>knn.ipynb</strong> will walk you through implementing the kNN classifier.</p>
+
+<h3 id="q2-training-a-support-vector-machine-25-points">Q2: Training a Support Vector Machine (25 points)</h3>
+
+<p>The IPython Notebook <strong>svm.ipynb</strong> will walk you through implementing the SVM classifier.</p>
+
+<h3 id="q3-implement-a-softmax-classifier-20-points">Q3: Implement a Softmax classifier (20 points)</h3>
+
+<p>The IPython Notebook <strong>softmax.ipynb</strong> will walk you through implementing the Softmax classifier.</p>
+
+<h3 id="q4-two-layer-neural-network-25-points">Q4: Two-Layer Neural Network (25 points)</h3>
+<p>The IPython Notebook <strong>two_layer_net.ipynb</strong> will walk you through the implementation of a two-layer neural network classifier.</p>
+
+<h3 id="q5-higher-level-representations-image-features-10-points">Q5: Higher Level Representations: Image Features (10 points)</h3>
+
+<p>The IPython Notebook <strong>features.ipynb</strong> will walk you through this exercise, in which you will examine the improvements gained by using higher-level representations as opposed to using raw pixel values.</p>
+
+<h3 id="q6-cool-bonus-do-something-extra-10-points">Q6: Cool Bonus: Do something extra! (+10 points)</h3>
+
+<p>Implement, investigate or analyze something extra surrounding the topics in this assignment, and using the code you developed. For example, is there some other interesting question we could have asked? Is there any insightful visualization you can plot? Or anything fun to look at? Or maybe you can experiment with a spin on the loss function? If you try out something cool we’ll give you up to 10 extra points and may feature your results in the lecture.</p>
+
+  </article>
+
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <div class="footer-col-1 column">
+      <ul>
+        
+        <li>
+          <a href="https://github.com/cs231n">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"></path>
+              </svg>
+            </span>
+            <span class="username">cs231n</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://twitter.com/cs231n">
+            <span class="icon twitter">
+              <svg version="1.1" class="twitter-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill="#C2C2C2" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27
+                c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767
+                c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206
+                C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271
+                c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469
+                c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"></path>
+              </svg>
+            </span>
+            <span class="username">cs231n</span>
+          </a>
+        </li>
+        <li>
+          <a href="mailto:karpathy@cs.stanford.edu">karpathy@cs.stanford.edu</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+        
+    </div>
+
+    <div class="footer-col-3 column">
+      
+    </div>
+
+  </div>
+
+</footer>
+
+
+    <!-- mathjax -->
+    <script src="./Assignment1_files/MathJax.js" id=""></script>
+    
+</body></html>

@@ -1,0 +1,8 @@
+coco_captioning          
+get_coco_captioning.sh  
+get_squeezenet_tf.sh  
+squeezenet.ckpt.data-00000-of-00001 
+squeezenet.ckpt.meta
+imagenet_val_25.npz   
+squeezenet.ckpt.index
+MNIST_data
